@@ -1,0 +1,1 @@
+deploys a vnet and snet
