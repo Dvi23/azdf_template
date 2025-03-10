@@ -1,5 +1,10 @@
-provider "azurerm" {
-  features {}
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 1.0"
+    }
+  }
 }
 
 # Resource Group
@@ -24,7 +29,7 @@ resource "azurerm_key_vault" "kv" {
   resource_group_name         = azurerm_resource_group.rg.name
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   sku_name                    = "standard"
-  purge_protection_enabled    = false
+  #purge_protection_enabled    = false
 }
 
 # Data Factory
@@ -55,6 +60,7 @@ resource "azurerm_synapse_workspace" "synapse" {
   resource_group_name                  = azurerm_resource_group.rg.name
   location                             = azurerm_resource_group.rg.location
   storage_data_lake_gen2_filesystem_id = azurerm_storage_account.storage.primary_dfs_endpoint
+  storage_account_type                 = "Standard_LRS"
   sql_administrator_login              = "sqladminuser"
   sql_administrator_login_password     = "H@rd2Gu3ssP@ssw0rd!"
 }
@@ -76,13 +82,11 @@ resource "azurerm_synapse_spark_pool" "spark_pool" {
   spark_version        = "3.2"
 
   auto_scale {
-    enabled      = true
     min_node_count = 3
     max_node_count = 10
   }
 
   auto_pause {
-    enabled = true
     delay_in_minutes = 15
   }
 }
